@@ -117,8 +117,9 @@ export default class EvChartBrush {
     const brushButtonWidth = 6;
     const brushCanvasWidth =
       evChartRange.x2 - evChartRange.x1 + brushButtonWidth;
-    //ANCHOR: brushCanvasHeight is modified.
-    const brushCanvasHeight = (evChartRange.y2 - evChartRange.y1) * 2;
+    //ANCHOR: brushCanvasHeight 를 아래로 늘려서, Text field로 사용할 영역을 확보했습니다..
+    const brushCanvasHeight =
+      evChartRange.y2 - evChartRange.y1 + evChartRange.y1 / 1.35;
 
     const axesXInterval =
       (evChartRange.x2 - evChartRange.x1) / this.labelEndIdx;
@@ -227,13 +228,15 @@ export default class EvChartBrush {
 
     const { brushRectX, brushRectWidth } = brushPosInfo;
 
+    //ANCHOR - Label이 나오는 경우, start-end Text가 나오지 않도록 하기 위해 ShowLabel 추출
     const {
       height,
       selection: { fillColor, opacity },
+      showLabel,
     } = this.evChartBrushOptions.value;
 
-    //ANCHOR brushRectHeight is modified.
-    const brushRectHeight = (height - evChartRange.y1) / 1.75;
+    //ANCHOR brushRectHeight 를 교묘히 조정해서, Text field로 사용할 영역을 확보했습니다.
+    const brushRectHeight = height - evChartRange.y1 - evChartRange.y1 / 1.35;
     const brushButtonLeftXPos = brushRectX;
     const brushButtonRightXPos = brushRectX + brushRectWidth;
 
@@ -262,6 +265,7 @@ export default class EvChartBrush {
     ctx.fillStyle = fillColor;
     ctx.globalAlpha = opacity;
     ctx.fillRect(brushRectX, 0, brushRectWidth, brushRectHeight);
+    ctx.fillStyle = "#ffffff";
     ctx.fillRect(brushButtonLeftXPos, 0, brushButtonWidth, brushRectHeight);
     ctx.fillRect(
       brushButtonRightXPos - brushButtonWidth,
@@ -270,51 +274,72 @@ export default class EvChartBrush {
       brushRectHeight
     );
 
-    // ANCHOR: 하단의 formattedStartTime, formattedEndTime을 명료한 format으로 변경해야 함
-    ctx.font = "10px Arial";
-    ctx.fillStyle = "black";
+    //ANCHOR - 쓸데없을 수 있는 버튼 리모델링
+    const cornerRadius = 2;
+    ctx.lineJoin = "round";
+    ctx.lineWidth = cornerRadius;
+    ctx.beginPath();
+    ctx.strokeStyle = "#ffffff"; // 선 색
 
-    const nowOnBrushRectWidth = brushRectX + brushRectWidth - 50 - brushRectX;
-    const middlePositionforMinimumTextMargin =
-      nowOnBrushRectWidth / 2 + brushRectX;
-
-    const properStartTextPosition =
-      110 - brushRectWidth < 0
-        ? brushRectX
-        : middlePositionforMinimumTextMargin - 25;
-    const properEndTextPosition =
-      110 - brushRectWidth < 0
-        ? brushRectX + brushRectWidth - 50
-        : middlePositionforMinimumTextMargin + 25;
-
-    const formattedStartTime = makeBrushButtonDateFormat(
-      this.evChartData.value.labels[this.brushIdx.start]
+    ctx.strokeRect(
+      brushButtonLeftXPos + cornerRadius / 2,
+      0 + cornerRadius / 2,
+      brushButtonWidth - cornerRadius,
+      brushRectHeight - cornerRadius
     );
-    const formattedEndTime =
-      110 - brushRectWidth < 0
-        ? makeBrushButtonDateFormat(
-            this.evChartData.value.labels[this.brushIdx.end]
-          )
-        : " ~ " +
-          makeBrushButtonDateFormat(
-            this.evChartData.value.labels[this.brushIdx.end]
-          );
 
-    console.log("...", properEndTextPosition);
-    //ANCHOR: text는 나오지만, 위치에 따라 width를 계산할 수 있도록 해주어야 함
-    ctx.fillText(
-      formattedStartTime,
-      properStartTextPosition,
-      brushRectHeight * 1.5,
-      50
+    ctx.strokeRect(
+      brushButtonRightXPos - brushButtonWidth + cornerRadius / 2,
+      0 + cornerRadius / 2,
+      brushButtonWidth - cornerRadius,
+      brushRectHeight - cornerRadius
     );
-    ctx.fillText(
-      formattedEndTime,
-      properEndTextPosition,
-      brushRectHeight * 1.5,
-      50
-    );
-    // ctx.fillRect(0, 0, brushRectWidth, brushRectHeight);
+
+    if (!showLabel) {
+      // ANCHOR: 하단의 고정변수를 Option으로 제공하느냐 vs 고정값으로 두느냐 판단해야 합니다. 더불어, 컨벤션에 부합하도록 위치를 수정해야 하겠습니다.
+      ctx.font = "10px Arial";
+      ctx.fillStyle = "black";
+
+      const nowOnBrushRectWidth = brushRectX + brushRectWidth - 50 - brushRectX;
+      const middlePositionforMinimumTextMargin =
+        nowOnBrushRectWidth / 2 + brushRectX;
+
+      const properStartTextPosition =
+        110 - brushRectWidth < 0
+          ? brushRectX
+          : middlePositionforMinimumTextMargin - 25;
+      const properEndTextPosition =
+        110 - brushRectWidth < 0
+          ? brushRectX + brushRectWidth - 50
+          : middlePositionforMinimumTextMargin + 25;
+
+      const formattedStartTime = makeBrushButtonDateFormat(
+        this.evChartData.value.labels[this.brushIdx.start]
+      );
+      const formattedEndTime =
+        110 - brushRectWidth < 0
+          ? makeBrushButtonDateFormat(
+              this.evChartData.value.labels[this.brushIdx.end]
+            )
+          : " ~ " +
+            makeBrushButtonDateFormat(
+              this.evChartData.value.labels[this.brushIdx.end]
+            );
+
+      //ANCHOR: 각 위치에 따라 width를 계산하여 text 드로잉
+      ctx.fillText(
+        formattedStartTime,
+        properStartTextPosition,
+        brushRectHeight * 1.35,
+        50
+      );
+      ctx.fillText(
+        formattedEndTime,
+        properEndTextPosition,
+        brushRectHeight * 1.35,
+        50
+      );
+    }
 
     this.brushPosInfo = {
       leftX: brushButtonLeftXPos / pixelRatio,
