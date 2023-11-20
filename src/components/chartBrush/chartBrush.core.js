@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import { throttle, debounce } from "lodash-es";
+import { makeBrushButtonDateFormat } from "@/common/utils.brush.js";
 
 const BRUSH_UPDATE_MODE = {
   WHEEL: {
@@ -269,24 +270,49 @@ export default class EvChartBrush {
       brushRectHeight
     );
 
-    // ANCHOR: fix here to make the brush start time and end time text visible
+    // ANCHOR: 하단의 formattedStartTime, formattedEndTime을 명료한 format으로 변경해야 함
     ctx.font = "10px Arial";
-    ctx.fillRect(
-      brushRectX,
-      brushRectHeight,
-      brushButtonWidth / 2,
-      brushRectHeight / 3
+    ctx.fillStyle = "black";
+
+    const nowOnBrushRectWidth = brushRectX + brushRectWidth - 50 - brushRectX;
+    const middlePositionforMinimumTextMargin =
+      nowOnBrushRectWidth / 2 + brushRectX;
+
+    const properStartTextPosition =
+      110 - brushRectWidth < 0
+        ? brushRectX
+        : middlePositionforMinimumTextMargin - 25;
+    const properEndTextPosition =
+      110 - brushRectWidth < 0
+        ? brushRectX + brushRectWidth - 50
+        : middlePositionforMinimumTextMargin + 25;
+
+    const formattedStartTime = makeBrushButtonDateFormat(
+      this.evChartData.value.labels[this.brushIdx.start]
     );
-    //ANCHOR: text is Drawn... but...
+    const formattedEndTime =
+      110 - brushRectWidth < 0
+        ? makeBrushButtonDateFormat(
+            this.evChartData.value.labels[this.brushIdx.end]
+          )
+        : " ~ " +
+          makeBrushButtonDateFormat(
+            this.evChartData.value.labels[this.brushIdx.end]
+          );
+
+    console.log("...", properEndTextPosition);
+    //ANCHOR: text는 나오지만, 위치에 따라 width를 계산할 수 있도록 해주어야 함
     ctx.fillText(
-      `${this.evChartData.value.labels[this.brushIdx.start]}`,
-      brushRectX,
-      brushRectHeight * 1.5
+      formattedStartTime,
+      properStartTextPosition,
+      brushRectHeight * 1.5,
+      50
     );
     ctx.fillText(
-      `${this.evChartData.value.labels[this.brushIdx.end]}`,
-      brushRectX + brushRectWidth - 40,
-      brushRectHeight * 1.5
+      formattedEndTime,
+      properEndTextPosition,
+      brushRectHeight * 1.5,
+      50
     );
     // ctx.fillRect(0, 0, brushRectWidth, brushRectHeight);
 
