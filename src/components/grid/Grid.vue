@@ -167,6 +167,7 @@
     class="grid-wrapper"
     :style="`width: ${gridWidth}; height: ${gridHeight};`"
   >
+  <!-- ANCHOR isGroupColumn 변수명으로 group표현이 필요한지 판별 후 'group' class 주입 -->
     <!-- Table -->
     <div
       v-cloak
@@ -226,12 +227,14 @@
             v-for="(column, index) in orderedColumns"
             :key="index"
           >
+            <!-- ANCHOR isGroupColumn 변수명으로 group표현이 필요한지 판별 후 'non-padding' class 주입 -->
             <!-- Header -->
             <li
               v-if="!column.hide && !column.hiddenDisplay"
               :data-index="index"
               :class="{
                 column: true,
+                'non-padding': !!isGroupColumn,
                 render: isRenderer(column),
                 'non-border': !!borderStyle,
                 [column.field]: column.field,
@@ -251,9 +254,11 @@
               <!-- // ANCHOR - group 기능을 위해 수정할 부분 -->
               <!-- Column group -->
               <span
-                v-if="column.group && !column.hiddenDisplay"
+              v-if=!!column.group
+              class="group-name"
               >
                 {{ column.group ? column.group : '' }}
+                <hr class="group-hr"/>
               </span>
               <!-- Column Name -->
               <span
