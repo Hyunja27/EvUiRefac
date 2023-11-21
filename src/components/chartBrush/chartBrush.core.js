@@ -119,7 +119,7 @@ export default class EvChartBrush {
       evChartRange.x2 - evChartRange.x1 + brushButtonWidth;
     //ANCHOR: brushCanvasHeight 를 아래로 늘려서, Text field로 사용할 영역을 확보했습니다..
     const brushCanvasHeight =
-      evChartRange.y2 - evChartRange.y1 + evChartRange.y1 / 1.35;
+      evChartRange.y2 - evChartRange.y1 + 20;
 
     const axesXInterval =
       (evChartRange.x2 - evChartRange.x1) / this.labelEndIdx;
@@ -236,7 +236,7 @@ export default class EvChartBrush {
     } = this.evChartBrushOptions.value;
 
     //ANCHOR brushRectHeight 를 교묘히 조정해서, Text field로 사용할 영역을 확보했습니다.
-    const brushRectHeight = height - evChartRange.y1 - evChartRange.y1 / 1.35;
+    const brushRectHeight = height - evChartRange.y1 - 19;
     const brushButtonLeftXPos = brushRectX;
     const brushButtonRightXPos = brushRectX + brushRectWidth;
 
