@@ -177,6 +177,7 @@
         'ev-grid': true,
         'non-header': !showHeader,
         'ev-grid--empty': !viewStore.length,
+        'group': isGroupColumn,
       }"
     >
       <!-- Header -->
@@ -247,6 +248,13 @@
               @dragover="onDragOver"
               @drop="onDrop"
             >
+              <!-- // ANCHOR - group 기능을 위해 수정할 부분 -->
+              <!-- Column group -->
+              <span
+                v-if="column.group && !column.hiddenDisplay"
+              >
+                {{ column.group ? column.group : '' }}
+              </span>
               <!-- Column Name -->
               <span
                 :title="column.caption"
@@ -1345,6 +1353,20 @@ export default {
         document.body.appendChild(root);
       }
     };
+    // ANCHOR - 묶여질 group이 존재하는지 순회&확인하여 판별
+    const isGroupColumn = computed(() => {
+        const groupCounts = {};
+        stores.originColumns.forEach((column) => {
+          if (column.group) {
+            if (groupCounts[column.group]) {
+              groupCounts[column.group] += 1;
+            } else {
+              groupCounts[column.group] = 1;
+            }
+          }
+        });
+        return Object.values(groupCounts).some(count => count > 1);
+      });
 
     onBeforeMount(() => initWrapperDiv());
 
@@ -1412,6 +1434,7 @@ export default {
       isShowFilteringItemsBox,
       filteringItemsStyle,
       hiddenFilteringItemsCount,
+      isGroupColumn,
       ...toRefs(filteringItemsBoxPosition),
       hiddenFilteringItemsRef,
       hiddenFilteringItemsByColumn,

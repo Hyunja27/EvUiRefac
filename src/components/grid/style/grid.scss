@@ -1,12 +1,21 @@
 @import '../../../style/index.scss';
 
 .ev-grid {
+  $grouped-header-height: 80px;
   $header-height: 33px;
   position: relative;
   width: 100%;
   height: 100%;
   padding-top: $header-height;
 
+  // ANCHOR - 묶여질 group이 존재하는지 순회&확인하여 판별
+  &.group {
+    padding-top: $grouped-header-height;
+    .table-header {
+      height: $grouped-header-height;
+    }
+  }
+  
   &--empty {
     overflow: auto;
     .table-header {

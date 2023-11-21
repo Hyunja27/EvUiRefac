@@ -266,13 +266,23 @@ export default {
         value: 'rows',
       },
     ]);
+        // ANCHOR - groping 기능을 넣기 위한 테스트 데이터 생성을 위해, 기존 데이터를 주석처리하고 아래 데이터를 사용합니다.
+    // const columns = ref([
+    //   { caption: 'Name', field: 'userName', type: 'string', width: 80 },
+    //   { caption: 'Role', field: 'role', type: 'string', width: 80, hiddenDisplay: true },
+    //   { caption: 'number', field: 'number', type: 'number', width: 80 },
+    //   { caption: 'boolean', field: 'boolean', type: 'boolean', width: 80 },
+    //   { caption: 'Phone', field: 'phone', type: 'string', sortable: false },
+    //   { caption: 'Email', field: 'email', type: 'string', width: 80 },
+    //   { caption: 'Last Login', field: 'lastLogin', type: 'string' },
+    // ]);
     const columns = ref([
-      { caption: 'Name', field: 'userName', type: 'string', width: 80 },
-      { caption: 'Role', field: 'role', type: 'string', width: 80, hiddenDisplay: true },
-      { caption: 'number', field: 'number', type: 'number', width: 80 },
-      { caption: 'boolean', field: 'boolean', type: 'boolean', width: 80 },
-      { caption: 'Phone', field: 'phone', type: 'string', sortable: false },
-      { caption: 'Email', field: 'email', type: 'string', width: 80 },
+    { caption: 'Name', group: 'hello1', field: 'userName', type: 'string', width: 80 },
+      { caption: 'Role', group: 'hello1', field: 'role', type: 'string', width: 80, hiddenDisplay: true },
+      { caption: 'number', group: 'hello1', field: 'number', type: 'number', width: 80 },
+      { caption: 'boolean', group: 'hello2', field: 'boolean', type: 'boolean', width: 80 },
+      { caption: 'Phone', group: 'hello2', field: 'phone', type: 'string', sortable: false },
+      { caption: 'Email', group: 'hello3', field: 'email', type: 'string', width: 80 },
       { caption: 'Last Login', field: 'lastLogin', type: 'string' },
     ]);
     const resetBorderStyle = () => {
